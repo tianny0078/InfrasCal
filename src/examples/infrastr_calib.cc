@@ -39,6 +39,7 @@ main(int argc, char** argv)
     bool optimizePoints;
     std::string mapDataDir;
     std::string databaseDataDir;
+    std::string cameraDir;
     std::string inputDir;
     std::string vocDir;
     bool verbose;
@@ -55,6 +56,7 @@ main(int argc, char** argv)
         ("calib,c", boost::program_options::value<std::string>(&calibDir)->default_value("calib"), "Directory containing camera intrinsic input calibration files.")
         ("camera-count", boost::program_options::value<int>(&cameraCount)->default_value(1), "Number of cameras in rig.")
         ("camera-model", boost::program_options::value<std::string>(&cameraModel)->default_value("pinhole-radtan"), "Model name of camera. pinhole-radtan/pinhole-equi")
+        ("camera-dir", boost::program_options::value<std::string>(&cameraDir)->default_value("camera"), "Camera model config file. pinhole-radtan/pinhole-equi")
         ("camera-ids", boost::program_options::value<std::vector<int> >(&cameraIds)->multitoken(), "Ids of cameras to be calibrated in rig.")
         ("output,o", boost::program_options::value<std::string>(&outputDir)->default_value("calibration_data"), "Directory to write calibration result to.")
         ("preprocess", boost::program_options::bool_switch(&preprocessImages)->default_value(false), "Preprocess images.")
@@ -111,6 +113,29 @@ main(int argc, char** argv)
         cameraIds.resize(cameraCount);
         std::iota(cameraIds.begin(), cameraIds.end(), 0);
     }
+    std::vector<Camera::ModelType> cameraModelList;
+    if (boost::filesystem::exists(cameraDir)){
+        std::ifstream ifs(cameraDir);
+        std::string line;
+        while(std::getline(ifs, line))
+        {
+            std::string cameraModel;
+            std::stringstream str(line);
+            str >> cameraModel;
+            
+            Camera::ModelType cameraModelType;
+            if(cameraModel == "pinhole-radtan") cameraModelType = Camera::PINHOLE;
+            else if(cameraModel == "pinhole-equi") cameraModelType = Camera::KANNALA_BRANDT;
+            else
+            {
+                std::cout << "# ERROR: Please select correct camera model." <<std::endl;
+                exit(0);
+            }        
+            cameraModelList.push_back(cameraModelType);
+        }
+        ifs.close();
+    }
+
     Camera::ModelType cameraModelType;
     if(cameraModel == "pinhole-radtan") cameraModelType = Camera::PINHOLE;
     else if(cameraModel == "pinhole-equi") cameraModelType = Camera::KANNALA_BRANDT;
@@ -198,10 +223,19 @@ main(int argc, char** argv)
             cv::Mat imgTemp = cv::imread(inputImages[i].begin()->second);
             if (loadFrames)
                 continue;
-            if (calibMode=="InRa" || calibMode =="InRaS" || calibMode =="InRaSU") {
-                cameras.at(i) = infrascal::CameraFactory::instance()->generateCamera(
-                        cameraModelType, "camera_" + std::to_string(cameraIds[i]),
-                        cv::Size(imgTemp.cols, imgTemp.rows));
+            if(!cameraModelList.empty()){
+                if (calibMode=="InRa" || calibMode =="InRaS" || calibMode =="InRaSU") {
+                    cameras.at(i) = infrascal::CameraFactory::instance()->generateCamera(
+                            cameraModelList[i], "camera_" + std::to_string(cameraIds[i]),
+                            cv::Size(imgTemp.cols, imgTemp.rows));
+                    std::cout << "input camera model " << cameraIds[i] << " " << cameraModelList[i] << std::endl;
+                }
+            } else {
+                if (calibMode=="InRa" || calibMode =="InRaS" || calibMode =="InRaSU") {
+                    cameras.at(i) = infrascal::CameraFactory::instance()->generateCamera(
+                            cameraModelType, "camera_" + std::to_string(cameraIds[i]),
+                            cv::Size(imgTemp.cols, imgTemp.rows));
+                }
             }
 
         }

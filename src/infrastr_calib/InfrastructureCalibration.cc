@@ -797,7 +797,7 @@ InfrastructureCalibration::extractFeatures(const cv::Mat& image,
 #ifdef SIFT
     SiftGPU sift_gpu;
     const char* myargv[20] ={ "./sift_gpu", "-v", "0", "-maxd", "4000", "-tc2", "1000", "-cuda", "0",
-                              "-fo", "-1", "-d", "3", "-t", "0.0067", "-e", "10.0", "-ofix", "-mo", "1" };
+                              "-fo", "-1", "-d", "3", "-t", "0.0067", "-e", "10.0", "-ofix-not", "-mo", "1" };
     sift_gpu.ParseParam(20, myargv);
 
 
