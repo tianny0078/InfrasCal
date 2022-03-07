@@ -1885,7 +1885,7 @@ InfrastructureCalibration::optimize(int flags)
                     ceres::CostFunction* costFunction
                         = CostFunctionFactory::instance()->generateCostFunction(m_cameraSystem.getCamera(frame->cameraId()),
                                                                                 Eigen::Vector2d(feature2D->keypoint().pt.x, feature2D->keypoint().pt.y),
-                                                                                flags);
+                                                                                tempFlags);
 
                     problem.AddResidualBlock(costFunction, lossFunction,
                                              T_cam_ref.at(frame->cameraId()).rotationData(),
@@ -1902,7 +1902,7 @@ InfrastructureCalibration::optimize(int flags)
                         = CostFunctionFactory::instance()->generateCostFunction(m_cameraSystem.getCamera(frame->cameraId()),
                                                                                 feature2D->feature3D()->point(),
                                                                                 Eigen::Vector2d(feature2D->keypoint().pt.x, feature2D->keypoint().pt.y),
-                                                                                flags);
+                                                                                tempFlags);
 
                     problem.AddResidualBlock(costFunction, lossFunction,
                                              T_cam_ref.at(frame->cameraId()).rotationData(),
@@ -1917,7 +1917,7 @@ InfrastructureCalibration::optimize(int flags)
                     ceres::CostFunction* costFunction
                         = CostFunctionFactory::instance()->generateCostFunction(m_cameraSystem.getCamera(frame->cameraId()),
                                                                                 Eigen::Vector2d(feature2D->keypoint().pt.x, feature2D->keypoint().pt.y),
-                                                                                flags);
+                                                                                tempFlags);
 
                     problem.AddResidualBlock(costFunction, lossFunction,
                                              intrinsicParams[frame->cameraId()].data(),
@@ -1935,7 +1935,7 @@ InfrastructureCalibration::optimize(int flags)
                         = CostFunctionFactory::instance()->generateCostFunction(m_cameraSystem.getCamera(frame->cameraId()),
                                                                                 feature2D->feature3D()->point(),
                                                                                 Eigen::Vector2d(feature2D->keypoint().pt.x, feature2D->keypoint().pt.y),
-                                                                                flags);
+                                                                                tempFlags);
 
                     problem.AddResidualBlock(costFunction, lossFunction,
                                              intrinsicParams[frame->cameraId()].data(),
@@ -1994,7 +1994,7 @@ InfrastructureCalibration::optimize(int flags)
         double minError, maxError, avgError;
         size_t featureCount;
         reprojectionError(minError, maxError, avgError, featureCount);
-        std::cout << "# INFO: Reprojection error: avg = " << avgError
+        std::cout << "# INFO: Optimize Reprojection error: avg = " << avgError
                   << " px | max = " << maxError << " px | count = " << featureCount << std::endl;
     }
 }
