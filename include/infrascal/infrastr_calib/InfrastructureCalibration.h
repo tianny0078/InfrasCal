@@ -1,6 +1,7 @@
 #ifndef INFRASTRUCTURECALIBRATION_H
 #define INFRASTRUCTURECALIBRATION_H
 
+#define INTRINSICS_FIXED
 #include <boost/thread.hpp>
 #include "src/SiftGPU/SiftGPU.h"
 
@@ -191,7 +192,6 @@ private:
     const double k_reprojErrorThresh;
 
     Options m_options;
-
 };
 
 template <typename FloatT>

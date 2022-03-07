@@ -107,6 +107,18 @@ Camera::Parameters::nIntrinsics(void) const
     return m_nIntrinsics;
 }
 
+bool
+Camera::Parameters::isFixed(void) const
+{
+    return m_fixed;
+}
+
+void
+Camera::Parameters::setFixed(bool fixed)
+{
+    m_fixed = fixed;
+}
+
 cv::Mat&
 Camera::mask(void)
 {

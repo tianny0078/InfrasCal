@@ -39,9 +39,12 @@ public:
         int imageHeight(void) const;
 
         int nIntrinsics(void) const;
+        int isFixed(void)const;
+        void setFixed(bool fixed);
 
         virtual bool readFromYamlFile(const std::string& filename) = 0;
         virtual void writeToYamlFile(const std::string& filename) const = 0;
+        virtual void print() const = 0;
 
     protected:
         ModelType m_modelType;
@@ -49,6 +52,7 @@ public:
         std::string m_cameraName;
         int m_imageWidth;
         int m_imageHeight;
+        bool m_fixed;
     };
 
     virtual ModelType modelType(void) const = 0;

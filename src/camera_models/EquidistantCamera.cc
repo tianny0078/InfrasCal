@@ -205,6 +205,21 @@ EquidistantCamera::Parameters::writeToYamlFile(const std::string& filename) cons
     fs.release();
 }
 
+void 
+EquidistantCamera::Parameters::print() const
+{
+    std::cout << "Yuan Testing Equi Intrinsics: "
+    << m_k2 << " "
+    << m_k3 << " "
+    << m_k4 << " "
+    << m_k5 << " "
+    << m_mu << " "
+    << m_mv << " "
+    << m_u0 << " "
+    << m_v0 << " "
+    << std::endl;
+}
+
 EquidistantCamera::Parameters&
 EquidistantCamera::Parameters::operator=(const EquidistantCamera::Parameters& other)
 {

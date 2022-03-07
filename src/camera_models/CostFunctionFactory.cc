@@ -829,6 +829,31 @@ CostFunctionFactory::generateCostFunction(const CameraConstPtr& camera,
                 break;
         }
         break;
+    case PRINCIPLE_TRANSLATION:
+        switch (camera->modelType())
+        {
+            case Camera::KANNALA_BRANDT:
+                costFunction =
+                        new ceres::AutoDiffCostFunction<ReprojectionError1<EquidistantCamera>, 2, 1>(
+                                new ReprojectionError1<EquidistantCamera>(observed_P, observed_p));
+                break;
+            case Camera::PINHOLE:
+                costFunction =
+                        new ceres::AutoDiffCostFunction<ReprojectionError1<PinholeCamera>, 2, 1>(
+                                new ReprojectionError1<PinholeCamera>(observed_P, observed_p));
+                break;
+            case Camera::MEI:
+                costFunction =
+                        new ceres::AutoDiffCostFunction<ReprojectionError1<CataCamera>, 2, 1>(
+                                new ReprojectionError1<CataCamera>(observed_P, observed_p));
+                break;
+            case Camera::SCARAMUZZA:
+                costFunction =
+                        new ceres::AutoDiffCostFunction<ReprojectionError1<OCAMCamera>, 2, 1>(
+                                new ReprojectionError1<OCAMCamera>(observed_P, observed_p));
+                break;
+        }
+        break;
     case CAMERA_INTRINSICS | CAMERA_POSE:
         switch (camera->modelType())
         {

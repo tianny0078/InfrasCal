@@ -869,6 +869,21 @@ PinholeCamera::writeParameters(std::vector<double>& parameterVec) const
     parameterVec.at(7) = mParameters.cy();
 }
 
+void 
+PinholeCamera::Parameters::print() const
+{
+    std::cout << "Yuan Testing Pinhole Intrinsics: "
+    << m_k1 << " "
+    << m_k2 << " "
+    << m_p1 << " "
+    << m_p2 << " "
+    << m_fx << " "
+    << m_fy << " "
+    << m_cx << " "
+    << m_cy << " "
+    << std::endl;
+}
+
 void
 PinholeCamera::setPrinciplePoint(const std::vector<double>& cxcy)
 {

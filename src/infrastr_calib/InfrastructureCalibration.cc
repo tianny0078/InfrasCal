@@ -42,7 +42,42 @@ InfrastructureCalibration::InfrastructureCalibration(std::vector<CameraPtr>& cam
  , k_nearestImageMatches(10)
  , k_reprojErrorThresh(10.0)
 {
+#ifdef INTRINSICS_FIXED
+    // camera 0 and camera 1 are pinhole-radtan 
+    // hardcode for camera 0 and camera 1 setting
+    m_cameras[0]->setFixed(true);
+    m_cameras[1]->setFixed(true);
 
+    // cam0 
+    // color intrinsics, fx: 609.662720, fy: 609.585327, cx: 638.543640, cy: 365.824127,  
+    // k1: 0.573380, k2: -2.660293, k3: 1.467813, k4: 0.449164, k5: -2.482795, K6: 1.397006, 
+    // p1: 0.000475, p2: -0.000147, codx: 0.000000, cody: 0.000000, metric radius: 4544817894603397603610071138304.000000 
+
+    // cam1 
+    // color intrinsics, fx: 611.858032, fy: 611.819702, cx: 638.730835, cy: 367.675842,  
+    // k1: 0.708046, k2: -2.920757, k3: 1.619510, k4: 0.585815, k5: -2.746500, K6: 1.549411, 
+    // p1: 0.000766, p2: -0.000197, codx: 0.000000, cody: 0.000000, metric radius: 0.000620 
+
+    std::vector<double> parameterVec(m_cameras[0]->parameterCount());
+    parameterVec[0] = 0.573380;//k1
+    parameterVec[1] = -2.660293;//k2
+    parameterVec[2] = 0.000475;//p1
+    parameterVec[3] = -0.000147;//p2
+    parameterVec[4] = 609.662720;//fx
+    parameterVec[5] = 609.585327;//fy
+    parameterVec[6] = 638.543640;//cx
+    parameterVec[7] = 365.824127;//cy
+    m_cameras[0]->readParameters(parameterVec);
+    parameterVec[0] = 0.708046;//k1
+    parameterVec[1] = -2.920757;//k2
+    parameterVec[2] = 0.000766;//p1
+    parameterVec[3] = -0.000197;//p2
+    parameterVec[4] = 611.858032;//fx
+    parameterVec[5] = 611.819702;//fy
+    parameterVec[6] = 638.730835;//cx
+    parameterVec[7] = 367.675842;//cy
+    m_cameras[1]->readParameters(parameterVec);
+#endif
 }
 
 bool
@@ -479,10 +514,12 @@ InfrastructureCalibration::run(void)
             radialReprojectionError(minError, maxError, avgError, featureCount);
             std::cout << "# INFO: Radial reprojection error: avg = " << avgError
                       << " px | max = " << maxError << " px | count = " << featureCount << std::endl;
+            m_cameras[0]->print();
+            m_cameras[1]->print();
         }
 
         // optimization P and Q for all frames
-        optimizeRadialRigposeBA();
+        optimizeRadialRigposeBA(); // optimize cx,cy
         if (m_verbose) {
             printCameraExtrinsics("after cam pose BA, cam ref");
             double minError, maxError, avgError;
@@ -490,10 +527,12 @@ InfrastructureCalibration::run(void)
             radialReprojectionError(minError, maxError, avgError, featureCount);
             std::cout << "# INFO: Radial reprojection error: avg = " << avgError
                       << " px | max = " << maxError << " px | count = " << featureCount << std::endl;
+            m_cameras[0]->print();
+            m_cameras[1]->print();
         }
 
         // upgrade each camera
-        upgradeRadialCamera();
+        upgradeRadialCamera();//optimize intrinsics
         if (m_verbose) {
             printCameraExtrinsics("after cam upgrade");
             double minError, maxError, avgError;
@@ -501,7 +540,8 @@ InfrastructureCalibration::run(void)
             reprojectionError(minError, maxError, avgError, featureCount);
             std::cout << "# INFO: Reprojection error: avg = " << avgError
                       << " px | max = " << maxError << " px | count = " << featureCount << std::endl;
-
+            m_cameras[0]->print();
+            m_cameras[1]->print();
         }
         upgradeOptiRadialCamera();
         if (m_verbose) {
@@ -511,7 +551,8 @@ InfrastructureCalibration::run(void)
             reprojectionError(minError, maxError, avgError, featureCount);
             std::cout << "# INFO: Reprojection error: avg = " << avgError
                       << " px | max = " << maxError << " px | count = " << featureCount << std::endl;
-
+            m_cameras[0]->print();
+            m_cameras[1]->print();
         }
     }
     else if(m_options.calibMode == "InRa" || m_options.calibMode == "InRaS")
@@ -860,6 +901,7 @@ InfrastructureCalibration::extractFeatures(const cv::Mat& image,
 }
 
 
+// each camera has a thread of estimateCameraPose
 void
 InfrastructureCalibration::estimateCameraPose(uint64_t timestamp,
                                               FramePtr& frame)
@@ -1403,6 +1445,10 @@ InfrastructureCalibration::optimizeRadialRigposeBA()
                     continue;
                 }
                 bool optimize_cxy = true;
+#ifdef INTRINSICS_FIXED
+                if (camera->isFixed())
+                    optimize_cxy = false;
+#endif
                 if(optimize_cxy) {
                     ceres::LossFunction *lossFunction = new ceres::CauchyLoss(1.0);
                     ceres::CostFunction *costFunction
@@ -1504,6 +1550,11 @@ InfrastructureCalibration::upgradeRadialCamera()
         X.resize(3, 5);
         std::vector<Point2DFeaturePtr> indices = feature2dIndices.at(camid);
         const CameraConstPtr& camera1 = m_cameraSystem.getCamera(camid);
+#ifdef INTRINSICS_FIXED
+        if(camera1->isFixed())
+            continue;
+#endif
+
         std::vector<double> cxcy(2);
         m_cameraSystem.getCamera(camid)->getPrinciplePoint(cxcy);
 
@@ -1691,7 +1742,29 @@ InfrastructureCalibration::upgradeOptiRadialCamera()
             Eigen::Vector3d P2 = indices.at(k)->feature3D()->point();
             Eigen::Vector3d P1 = transformPoint(T_world_cam, P2);
             const Point2DFeatureConstPtr &f1 = indices.at(k);
+#ifdef INTRINSICS_FIXED
+            ceres::CostFunction* costFunction = nullptr;
+            if(camera->isFixed()){
+                costFunction =
+                        CostFunctionFactory::instance()->generateCostFunction(m_cameraSystem.getCamera(camid),
+                                                                            P1,
+                                                                            Eigen::Vector2d(f1->keypoint().pt.x, f1->keypoint().pt.y),
+                                                                            PRINCIPLE_TRANSLATION);
+                ceres::LossFunction* lossFunction = new ceres::CauchyLoss(1.0);
+                problem.AddResidualBlock(costFunction, lossFunction,
+                                         &t3_offset);
+            } else {
+                costFunction =
+                        CostFunctionFactory::instance()->generateCostFunction(m_cameraSystem.getCamera(camid),
+                                                                            P1,
+                                                                            Eigen::Vector2d(f1->keypoint().pt.x, f1->keypoint().pt.y),
+                                                                            CAMERA_INTRINSICS | PRINCIPLE_TRANSLATION);
 
+                ceres::LossFunction* lossFunction = new ceres::CauchyLoss(1.0);
+                problem.AddResidualBlock(costFunction, lossFunction,
+                                        intrinsicParams[camid].data(), &t3_offset);
+            }
+#else
             ceres::CostFunction* costFunction =
                     CostFunctionFactory::instance()->generateCostFunction(m_cameraSystem.getCamera(camid),
                                                                           P1,
@@ -1701,7 +1774,7 @@ InfrastructureCalibration::upgradeOptiRadialCamera()
             ceres::LossFunction* lossFunction = new ceres::CauchyLoss(1.0);
             problem.AddResidualBlock(costFunction, lossFunction,
                                      intrinsicParams[camid].data(), &t3_offset);
-
+#endif
         }
         ceres::Solver::Summary summary;
         ceres::Solve(options, &problem, &summary);
@@ -1785,6 +1858,13 @@ InfrastructureCalibration::optimize(int flags)
         {
             FramePtr& frame = frameset.frames.at(j);
             int cameraId = frame->cameraId();
+            int tempFlags = flags;
+#ifdef INTRINSICS_FIXED
+                const CameraPtr& camera = m_cameraSystem.getCamera(cameraId);
+                if(camera->isFixed()){
+                    tempFlags = flags & ~CAMERA_INTRINSICS;
+                }
+#endif
 
             for (size_t k = 0; k < frame->features2D().size(); ++k)
             {
@@ -1798,7 +1878,7 @@ InfrastructureCalibration::optimize(int flags)
                 optimizeExtrinsics[cameraId] = 1;
 
                 ceres::LossFunction* lossFunction = new ceres::CauchyLoss(1.0);
-                switch (flags)
+                switch (tempFlags)
                 {
                 case CAMERA_ODOMETRY_TRANSFORM | ODOMETRY_6D_POSE | POINT_3D:
                 {
