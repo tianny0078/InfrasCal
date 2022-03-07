@@ -3,6 +3,7 @@
 
 #include <opencv2/core/core.hpp>
 #include <string>
+#include <iostream>
 
 #include "ceres/rotation.h"
 #include "Camera.h"
@@ -50,7 +51,6 @@ public:
 
         bool readFromYamlFile(const std::string& filename);
         void writeToYamlFile(const std::string& filename) const;
-        void print() const;
 
         Parameters& operator=(const Parameters& other);
         friend std::ostream& operator<< (std::ostream& out, const Parameters& params);
@@ -80,6 +80,8 @@ public:
     * \brief Constructor from the projection model parameters
     */
     CataCamera(const Parameters& params);
+
+    void print() const;
 
     Camera::ModelType modelType(void) const;
     const std::string& cameraName(void) const;

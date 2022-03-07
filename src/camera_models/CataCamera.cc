@@ -234,19 +234,19 @@ CataCamera::Parameters::writeToYamlFile(const std::string& filename) const
 }
 
 void 
-CataCamera::Parameters::print() const
+CataCamera::print() const
 {
-    std::cout << "Yuan Testing Cata Intrinsics: "
-    << m_xi << " "
-    << m_k1 << " "
-    << m_k2 << " "
-    << m_p1 << " "
-    << m_p2 << " "
-    << m_gamma1 << " "
-    << m_gamma2 << " "
-    << m_u0 << " "
-    << m_v0 << " "
-    << std::endl;
+    // std::cout << "Yuan Testing Cata Intrinsics: "
+    // << mParameters.m_xi << " "
+    // << mParameters.m_k1 << " "
+    // << mParameters.m_k2 << " "
+    // << mParameters.m_p1 << " "
+    // << mParameters.m_p2 << " "
+    // << mParameters.m_gamma1 << " "
+    // << mParameters.m_gamma2 << " "
+    // << mParameters.m_u0 << " "
+    // << mParameters.m_v0 << " "
+    // << std::endl;
 }
 
 CataCamera::Parameters&

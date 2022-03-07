@@ -108,13 +108,13 @@ Camera::Parameters::nIntrinsics(void) const
 }
 
 bool
-Camera::Parameters::isFixed(void) const
+Camera::isFixed(void) const
 {
     return m_fixed;
 }
 
 void
-Camera::Parameters::setFixed(bool fixed)
+Camera::setFixed(bool fixed)
 {
     m_fixed = fixed;
 }

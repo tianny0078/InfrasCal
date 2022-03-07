@@ -108,15 +108,15 @@ OCAMCamera::Parameters::writeToYamlFile(const std::string& filename) const
 }
 
 void 
-OCAMCamera::Parameters::print() const
+OCAMCamera::print() const
 {
-    std::cout << "Yuan Testing Sca Intrinsics: "
-    << m_C << " "
-    << m_D << " "
-    << m_E << " "
-    << m_center_x << " "
-    << m_center_y << " "
-    << std::endl;
+    // std::cout << "Yuan Testing Sca Intrinsics: "
+    // << m_C << " "
+    // << m_D << " "
+    // << m_E << " "
+    // << m_center_x << " "
+    // << m_center_y << " "
+    // << std::endl;
 }
 
 OCAMCamera::Parameters&

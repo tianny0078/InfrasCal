@@ -870,17 +870,17 @@ PinholeCamera::writeParameters(std::vector<double>& parameterVec) const
 }
 
 void 
-PinholeCamera::Parameters::print() const
+PinholeCamera::print() const
 {
     std::cout << "Yuan Testing Pinhole Intrinsics: "
-    << m_k1 << " "
-    << m_k2 << " "
-    << m_p1 << " "
-    << m_p2 << " "
-    << m_fx << " "
-    << m_fy << " "
-    << m_cx << " "
-    << m_cy << " "
+    << mParameters.m_k1 << " "
+    << mParameters.m_k2 << " "
+    << mParameters.m_p1 << " "
+    << mParameters.m_p2 << " "
+    << mParameters.m_fx << " "
+    << mParameters.m_fy << " "
+    << mParameters.m_cx << " "
+    << mParameters.m_cy << " "
     << std::endl;
 }
 
