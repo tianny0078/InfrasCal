@@ -5,6 +5,7 @@
 #include <Eigen/Eigen>
 #include <opencv2/core/core.hpp>
 #include <vector>
+#include <iostream>
 
 namespace infrascal
 {

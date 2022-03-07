@@ -890,21 +890,6 @@ PinholeCamera::print() const
     mParameters.print();
 }
 
-void 
-PinholeCamera::print() const
-{
-    std::cout << "Yuan Testing Pinhole Intrinsics: "
-    << mParameters.m_k1 << " "
-    << mParameters.m_k2 << " "
-    << mParameters.m_p1 << " "
-    << mParameters.m_p2 << " "
-    << mParameters.m_fx << " "
-    << mParameters.m_fy << " "
-    << mParameters.m_cx << " "
-    << mParameters.m_cy << " "
-    << std::endl;
-}
-
 void
 PinholeCamera::setPrinciplePoint(const std::vector<double>& cxcy)
 {
