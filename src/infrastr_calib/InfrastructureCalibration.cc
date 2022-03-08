@@ -579,6 +579,16 @@ InfrastructureCalibration::run(void)
 
     //optimizeIntrinsics();
     optimize(optimizeFlags);
+    if (m_verbose) {
+            printCameraExtrinsics("after cam optimization 1: ");
+            double minError, maxError, avgError;
+            size_t featureCount;
+            reprojectionError(minError, maxError, avgError, featureCount);
+            std::cout << "# INFO: Reprojection error: avg = " << avgError
+                      << " px | max = " << maxError << " px | count = " << featureCount << std::endl;
+            m_cameras[0]->print();
+            m_cameras[1]->print();
+    }
 
     prune(PRUNE_FARAWAY | PRUNE_BEHIND_CAMERA | PRUNE_HIGH_REPROJ_ERR, ODOMETRY);
 
@@ -586,6 +596,9 @@ InfrastructureCalibration::run(void)
     optimize(optimizeFlags);
     if (m_verbose)
     {
+        std::cout << "after cam optimization 2: "<< std::endl;
+        m_cameras[0]->print();
+        m_cameras[1]->print();
         for (size_t i = 0; i < m_framesets.size(); ++i) {
             FrameSet &frameset = m_framesets.at(i);
             addOdometry(frameset.frames.at(0)->systemPose()->x(),
