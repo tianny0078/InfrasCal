@@ -20,7 +20,8 @@ public:
         Parameters(const std::string& cameraName,
                    int w, int h,
                    double k1, double k2, double p1, double p2,
-                   double fx, double fy, double cx, double cy);
+                   double fx, double fy, double cx, double cy,
+                   double k3, double k4, double k5, double k6);
 
         double& k1(void);
         double& k2(void);
@@ -30,6 +31,10 @@ public:
         double& fy(void);
         double& cx(void);
         double& cy(void);
+        double& k3(void);
+        double& k4(void);
+        double& k5(void);
+        double& k6(void);
 
         double xi(void) const;
         double k1(void) const;
@@ -40,6 +45,10 @@ public:
         double fy(void) const;
         double cx(void) const;
         double cy(void) const;
+        double k3(void) const;
+        double k4(void) const;
+        double k5(void) const;
+        double k6(void) const;
 
         bool readFromYamlFile(const std::string& filename);
         void writeToYamlFile(const std::string& filename) const;
@@ -51,6 +60,10 @@ public:
     private:
         double m_k1;
         double m_k2;
+        double m_k3;
+        double m_k4;
+        double m_k5;
+        double m_k6;
         double m_p1;
         double m_p2;
         double m_fx;
@@ -67,7 +80,8 @@ public:
     PinholeCamera(const std::string& cameraName,
                   int imageWidth, int imageHeight,
                   double k1, double k2, double p1, double p2,
-                  double fx, double fy, double cx, double cy);
+                  double fx, double fy, double cx, double cy,
+                  double k3, double k4, double k5, double k6);
     /**
     * \brief Constructor from the projection model parameters
     */
@@ -184,13 +198,25 @@ PinholeCamera::spaceToPlane(const T* const params,
     T alpha = T(0); //cameraParams.alpha();
     T cx = params[6];
     T cy = params[7];
+    T k3 = params[8];
+    T k4 = params[9];
+    T k5 = params[10];
+    T k6 = params[11];
+
 
     // Transform to model plane
     T u = P_c[0] / P_c[2];
     T v = P_c[1] / P_c[2];
 
     T rho_sqr = u * u + v * v;
-    T L = T(1.0) + k1 * rho_sqr + k2 * rho_sqr * rho_sqr;
+    T rho_sqr2 = rho_sqr * rho_sqr;
+    T rho_sqr3 = rho_sqr2 * rho_sqr;
+    T L = T(1.0) + k1 * rho_sqr + k2 * rho_sqr2 + k3 * rho_sqr3;
+    T M = T(1.0) + k4 * rho_sqr + k5 * rho_sqr2 + k6 * rho_sqr3;
+    if (M == T(0.0)){
+        M = T(1.0);
+    }
+    L = L / M;
     T du = T(2.0) * p1 * u * v + p2 * (rho_sqr + T(2.0) * u * u);
     T dv = p1 * (rho_sqr + T(2.0) * v * v) + T(2.0) * p2 * u * v;
 

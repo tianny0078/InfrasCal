@@ -789,7 +789,7 @@ CostFunctionFactory::generateCostFunction(const CameraConstPtr& camera,
                 break;
             case Camera::PINHOLE:
                 costFunction =
-                        new ceres::AutoDiffCostFunction<ReprojectionError1<PinholeCamera>, 2, 8>(
+                        new ceres::AutoDiffCostFunction<ReprojectionError1<PinholeCamera>, 2, 12>(
                                 new ReprojectionError1<PinholeCamera>(observed_P, observed_p));
                 break;
             case Camera::MEI:
@@ -814,7 +814,7 @@ CostFunctionFactory::generateCostFunction(const CameraConstPtr& camera,
                 break;
             case Camera::PINHOLE:
                 costFunction =
-                        new ceres::AutoDiffCostFunction<ReprojectionError1<PinholeCamera>, 2, 8, 1>(
+                        new ceres::AutoDiffCostFunction<ReprojectionError1<PinholeCamera>, 2, 12, 1>(
                                 new ReprojectionError1<PinholeCamera>(observed_P, observed_p));
                 break;
             case Camera::MEI:
@@ -864,7 +864,7 @@ CostFunctionFactory::generateCostFunction(const CameraConstPtr& camera,
             break;
         case Camera::PINHOLE:
             costFunction =
-                new ceres::AutoDiffCostFunction<ReprojectionError1<PinholeCamera>, 2, 8, 4, 3>(
+                new ceres::AutoDiffCostFunction<ReprojectionError1<PinholeCamera>, 2, 12, 4, 3>(
                     new ReprojectionError1<PinholeCamera>(observed_P, observed_p));
             break;
         case Camera::MEI:
@@ -914,7 +914,7 @@ CostFunctionFactory::generateCostFunction(const CameraConstPtr& camera,
             break;
         case Camera::PINHOLE:
             costFunction =
-                new ceres::AutoDiffCostFunction<ReprojectionError1<PinholeCamera>, 2, 8, 4, 3, 3, 3>(
+                new ceres::AutoDiffCostFunction<ReprojectionError1<PinholeCamera>, 2, 12, 4, 3, 3, 3>(
                     new ReprojectionError1<PinholeCamera>(observed_P, observed_p));
             break;
         case Camera::MEI:
@@ -1158,13 +1158,13 @@ CostFunctionFactory::generateCostFunction(const CameraConstPtr& camera,
             if (optimize_cam_odo_z)
             {
                 costFunction =
-                    new ceres::AutoDiffCostFunction<ReprojectionError3<PinholeCamera>, 2, 8, 4, 3, 2, 1, 3>(
+                    new ceres::AutoDiffCostFunction<ReprojectionError3<PinholeCamera>, 2, 12, 4, 3, 2, 1, 3>(
                         new ReprojectionError3<PinholeCamera>(observed_p));
             }
             else
             {
                 costFunction =
-                    new ceres::AutoDiffCostFunction<ReprojectionError3<PinholeCamera>, 2, 8, 4, 2, 2, 1, 3>(
+                    new ceres::AutoDiffCostFunction<ReprojectionError3<PinholeCamera>, 2, 12, 4, 2, 2, 1, 3>(
                         new ReprojectionError3<PinholeCamera>(observed_p));
             }
             break;
@@ -1219,13 +1219,13 @@ CostFunctionFactory::generateCostFunction(const CameraConstPtr& camera,
             if (optimize_cam_odo_z)
             {
                 costFunction =
-                    new ceres::AutoDiffCostFunction<ReprojectionError3<PinholeCamera>, 2, 8, 4, 3, 3, 3, 3>(
+                    new ceres::AutoDiffCostFunction<ReprojectionError3<PinholeCamera>, 2, 12, 4, 3, 3, 3, 3>(
                         new ReprojectionError3<PinholeCamera>(observed_p));
             }
             else
             {
                 costFunction =
-                    new ceres::AutoDiffCostFunction<ReprojectionError3<PinholeCamera>, 2, 8, 4, 2, 3, 3, 3>(
+                    new ceres::AutoDiffCostFunction<ReprojectionError3<PinholeCamera>, 2, 12, 4, 2, 3, 3, 3>(
                         new ReprojectionError3<PinholeCamera>(observed_p));
             }
             break;
