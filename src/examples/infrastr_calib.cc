@@ -40,6 +40,7 @@ main(int argc, char** argv)
     std::string mapDataDir;
     std::string databaseDataDir;
     std::string cameraDir;
+    std::string intriConfig;
     std::string inputDir;
     std::string vocDir;
     bool verbose;
@@ -57,6 +58,7 @@ main(int argc, char** argv)
         ("camera-count", boost::program_options::value<int>(&cameraCount)->default_value(1), "Number of cameras in rig.")
         ("camera-model", boost::program_options::value<std::string>(&cameraModel)->default_value("pinhole-radtan"), "Model name of camera. pinhole-radtan/pinhole-equi")
         ("camera-dir", boost::program_options::value<std::string>(&cameraDir)->default_value("camera"), "Camera model config file. pinhole-radtan/pinhole-equi")
+        ("intri_config", boost::program_options::value<std::string>(&intriConfig)->default_value("11111"), "Intrinsics fixed file. 0 not fixed, 1 fixed")
         ("camera-ids", boost::program_options::value<std::vector<int> >(&cameraIds)->multitoken(), "Ids of cameras to be calibrated in rig.")
         ("output,o", boost::program_options::value<std::string>(&outputDir)->default_value("calibration_data"), "Directory to write calibration result to.")
         ("preprocess", boost::program_options::bool_switch(&preprocessImages)->default_value(false), "Preprocess images.")
@@ -252,6 +254,7 @@ main(int argc, char** argv)
     options.optimizeIntrinsics = !(calibMode == "In");
     options.optimizePoints = optimizePoints;
     options.calibMode = calibMode;
+    options.intriConfig = intriConfig;
 
     InfrastructureCalibration infrasCalib(cameras, options);
     if(infrasCalib.loadMap(mapDataDir, databaseDataDir, vocDir)){

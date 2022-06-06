@@ -26,16 +26,6 @@
 #--vocab ./data/vocabulary/sift128.bin \
 #-v --camera-dir $ws/../camera_model.config --save
 
-#ws=/media/data1/data/Hand2021_backup/2022-03-03/seq2
-
-#./build/bin/infrastr_calib --camera-count 6 \
-#--output $ws/results \
-#--map $ws/../map_refine1 \
-#--database $ws/../map_refine1/db.db \
-#--input $ws/ \
-#--vocab ./data/vocabulary/sift128.bin \
-#-v --camera-dir $ws/../camera_model.config --save
-
 #ws=/media/data1/data/Hand2021_backup/2022-02-24/seq1new
 
 #./build/bin/infrastr_calib --camera-count 5 \
@@ -44,9 +34,10 @@
 #--database $ws/../map_refine1/db.db \
 #--input $ws/ \
 #--vocab ./data/vocabulary/sift128.bin \
+#--calib $ws/calib --calib-mode InRI \
 #-v --camera-dir $ws/../camera_model.config --save
 
-ws=/media/data1/data/Hand2021_backup/2022-02-24/seq1new
+ws=/media/data1/data/Hand2021_backup/2022-04-26/seq1_cp
 
 ./build/bin/infrastr_calib --camera-count 5 \
 --output $ws/results \
@@ -54,5 +45,5 @@ ws=/media/data1/data/Hand2021_backup/2022-02-24/seq1new
 --database $ws/../map_refine1/db.db \
 --input $ws/ \
 --vocab ./data/vocabulary/sift128.bin \
---calib $ws/calib --calib-mode InRI \
+--calib $ws/calib --calib-mode InRI --intri_config 01100 \
 -v --camera-dir $ws/../camera_model.config --save

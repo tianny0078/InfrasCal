@@ -43,13 +43,25 @@ InfrastructureCalibration::InfrastructureCalibration(std::vector<CameraPtr>& cam
  , k_reprojErrorThresh(10.0)
 {
 #ifdef INTRINSICS_FIXED
+    if(options.intriConfig.size() != 5){
+        std::cout << "ERROR: INTRINSICS CONFIG INPUT NEEDS TO BE 5 (CAMERAS), e.g. 11111" << std::endl;
+        return;
+    }
+    std::cout << "Fix Intialization: " << options.intriConfig << std::endl;
     // camera 0 and camera 1 are pinhole-radtan 
     // hardcode for camera 0 and camera 1 setting
-    m_cameras[0]->setFixed(true);
-    m_cameras[1]->setFixed(false);
-    m_cameras[2]->setFixed(false);
-    m_cameras[3]->setFixed(false);
-    m_cameras[4]->setFixed(false);
+    m_cameras[0]->setFixed(options.intriConfig[0] == '1');
+    m_cameras[1]->setFixed(options.intriConfig[1] == '1');
+    m_cameras[2]->setFixed(options.intriConfig[2] == '1');
+    m_cameras[3]->setFixed(options.intriConfig[3] == '1');
+    m_cameras[4]->setFixed(options.intriConfig[4] == '1');
+    std::cout << "Fix Success: " << m_cameras[0]->isFixed()
+                                 << m_cameras[1]->isFixed()
+                                 << m_cameras[2]->isFixed()
+                                 << m_cameras[3]->isFixed()
+                                 << m_cameras[4]->isFixed()
+                                 << std::endl;
+
 
     // cam0 
     // color intrinsics, fx: 609.662720, fy: 609.585327, cx: 638.543640, cy: 365.824127,  
@@ -61,16 +73,16 @@ InfrastructureCalibration::InfrastructureCalibration(std::vector<CameraPtr>& cam
     // k1: 0.708046, k2: -2.920757, k3: 1.619510, k4: 0.585815, k5: -2.746500, K6: 1.549411, 
     // p1: 0.000766, p2: -0.000197, codx: 0.000000, cody: 0.000000, metric radius: 0.000620 
 
-    //std::vector<double> parameterVec(m_cameras[0]->parameterCount());
-    //parameterVec[0] = 0.573380;//k1
-    //parameterVec[1] = -2.660293;//k2
-    //parameterVec[2] = 0.000475;//p1
-    //parameterVec[3] = -0.000147;//p2
-    //parameterVec[4] = 609.662720;//fx
-    //parameterVec[5] = 609.585327;//fy
-    //parameterVec[6] = 638.543640;//cx
-    //parameterVec[7] = 365.824127;//cy
-    //m_cameras[0]->readParameters(parameterVec);
+    // std::vector<double> parameterVec(m_cameras[0]->parameterCount());
+    // parameterVec[0] = 0.573380;//k1
+    // parameterVec[1] = -2.660293;//k2
+    // parameterVec[2] = 0.000475;//p1
+    // parameterVec[3] = -0.000147;//p2
+    // parameterVec[4] = 609.662720;//fx
+    // parameterVec[5] = 609.585327;//fy
+    // parameterVec[6] = 638.543640;//cx
+    // parameterVec[7] = 365.824127;//cy
+    // m_cameras[0]->readParameters(parameterVec);
     // parameterVec[0] = 0.708046;//k1
     // parameterVec[1] = -2.920757;//k2
     // parameterVec[2] = 0.000766;//p1

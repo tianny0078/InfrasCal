@@ -43,6 +43,7 @@ public:
         bool optimizeIntrinsics;
         bool verbose;
         std::string calibMode;
+        std::string intriConfig;
     };
 
     typedef struct
